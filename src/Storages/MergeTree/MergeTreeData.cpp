@@ -2135,6 +2135,11 @@ bool MergeTreeData::renameTempPartAndReplace(
 
     if (DataPartPtr existing_part_in_partition = getAnyPartInPartition(part->info.partition_id, lock))
     {
+        if (existing_part_in_partition == nullptr) {
+            throw Exception(
+                    "Partition value is null, part name: " + part->name,
+                    ErrorCodes::CORRUPTED_DATA);
+        }
         if (part->partition.value != existing_part_in_partition->partition.value)
             throw Exception(
                 "Partition value mismatch between two parts with the same partition ID. Existing part: "
